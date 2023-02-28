@@ -1,41 +1,92 @@
-# TCPS_Image_Attack
-
-AirSim does not work well with Ubuntu 20.
-
-We had to use ROS Melodic that works with Ubuntu 18.
-
-And Default ROS Melodic does not work with Python2.
-
-So, we used the scheme linked below. It is basically reinstall some ROS relevant packages.
+# Robost Vision Based Object Tracking System Demo
 
 
-https://dhanoopbhaskar.com/blog/2020-05-07-working-with-python-3-in-ros-kinetic-or-melodic/
+This repository contains code for defending the black box attack for autonomous driving or flight. We embedded an attacker which attack the object localization part of the CNN object detecter. A FPRN proposed by us also has been embedded inside the package to defend this attack. The proposed FPRN make sure the vision based object tracking to move system perform normally even under the random black box attack.
 
 
-ROS (upto Melodic) officially supports only python2 and NOT python3. However some libraries we use in our projects (eg. Speech Recognition using Google Cloud Speech) may require python3 to run.
+Autoflight for tracking an detected object to move can be found here -> https://www.youtube.com/watch?v=E_bgRGCXYG4
+Online image attack simulaiton video can be found here -> https://www.youtube.com/watch?v=mLpQ3nOqwrU
+The FPRN for defending the black box attack can be found here -> https://www.youtube.com/watch?v=MOgg8s-5LVc
 
-If ROS needs to support python3 we may have to recompile ROS source code using python3 which is not practical.
 
-So what we can do is to run python3 programs, separately and connect using ROS bridge. (if we use custom messages (ROS msg)
 
-However, if we are not using any custom rosmsg and using only built-in rosmsg, we can do the following steps to run python3 codes in ROS (without using a ROS bridge.)
+## Dependency
 
-Install ROS (here I install Melodic)
+- [Ubuntu 18.04](https://releases.ubuntu.com/18.04/)
+- [ROS melodic](http://wiki.ros.org/ROS/Installation)
+- [Anaconda](https://www.anaconda.com/products/distribution#linux)
+- [Pytorch](https://pytorch.org/get-started/locally/)
+- [Airsim](https://microsoft.github.io/AirSim/airsim_ros_pkgs/)
+- [Unreal Engine](https://github.com/EpicGames/UnrealEngine)
 
- apt install ros-melodic-desktop-full
+Please follow the tutorial in Wiki to configure the [simulation environment](https://github.com/haotiangu/Robost_Vision_Based_Object_Tracking_System_Demo/wiki/The-General-Configuring-Tutorial-of-The-Simulation-Environment).
 
-After installing ROS, install rospkg for python3
 
- apt install python3-pip python3-all-dev python3-rospkg
 
-This will prompt to install python3-rospkg and to remove ROS packages (already installed). Select Yes for that prompt. This will remove ROS packages and we will have to re-install them.
+## Compile
 
- apt install ros-melodic-desktop-full --fix-missing
+You can use the following commands to download and install the software.
 
-This will complete the installation part. Now comes the coding part.
+```
+cd ~/catkin_ws/src
+git clone https://github.com/RobustFieldAutonomyLab/LeGO-LOAM.git
+cd ..
 
-Just include the following directive as the first line of your program code (file) which should be executed using python3.
+```
 
- #!/usr/bin/env python3
+Install the dependent software of the FPRN
 
-We can now execute everything as we do normally in ROS. Read the documentation (link is given above) for more information on ROS.
+```
+cd fastdvdnet
+pip install -r requirements.txt
+```
+
+Compile the package
+```
+catkin_make
+```
+
+
+
+## Run the package
+
+1. Activate the ros environment:
+```
+conda activate ros_env
+```
+
+
+2. Download the file.
+
+```
+cd ~/catkin_ws/src
+git clone git@github.com:haotiangu/Robost_Vision_Based_Object_Tracking_System_Demo.git
+cd ..
+```
+3. Install the dependent software of the fastdvdnet
+
+```
+cd fastdvdnet
+pip install -r requirements.txt
+```
+
+
+
+```
+catkin_make
+```
+
+4.  Source the file before running the launch package.
+```
+source ~/catkin_ws/devel/setup.bash
+```
+
+
+5. Run the launch file:
+```
+roslaunch tcps_image_attack autoflight.launch # object tracking to move demo
+roslaunch tcps_image_attack train.launch # attack the object localization  
+roslaunch tcps_image_attack train_denoiser.launch # object tracking to move when attack exist
+```
+
+
